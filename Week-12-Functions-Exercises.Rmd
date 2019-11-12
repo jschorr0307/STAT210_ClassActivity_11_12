@@ -20,7 +20,13 @@ d = rnorm(10)
 
 Write a function to automate the calculation of the rescale:
 ```{r}
-
+# name your function and then put arguments in "function(__)"
+rescale01 <- function(x){
+  
+  (x <- (x - min(x)) / (max(x) - min(x)))
+  
+}
+rescale01(df$a)
 ```
 
 
