@@ -59,9 +59,9 @@ babynames %>%
   mutate(last = str_sub(name, -1), 
           vowel = last %in% c("a", "e", "i", "o", "u", "y")) %>%
   group_by(year, sex) %>%
-  _________(p_vowel = weighted.mean(vowel, n)) %>%
-  _________ +
-  __________
+  summarise(p_vowel = weighted.mean(vowel, n)) %>%
+  ggplot() +
+  geom_line
 ```
 
 # Factors
@@ -89,7 +89,12 @@ Do you think liberals or conservatives watch more TV?
 Compute average tv hours by party ID an then plot the results.
 
 ```{r}
-
+gss_cat %>%
+  filter(!is.na(tvhours)) %>%
+  group_by(partyid) %>%
+  summarise(tv_avg = mean(tvhours)) %>%
+  ggplot(aes(tv_avg, fct_reorder(partyid, tv_avg))) +
+    geom_point()
 ```
 
 # Dates and Times
@@ -98,11 +103,17 @@ Compute average tv hours by party ID an then plot the results.
 
 What is the best time of day to fly?
 
+* super early is best
+
 Use the `hour` and `minute` variables in `flights` to make a new variable that shows the time of each flight as an hms. 
 
 Then use a smooth line to plot the relationship between time of day and `arr_delay`.
 
 ```{r}
+flights %>%
+  mutate(time = hms(hours = hour, minutes = minute))%>%
+  ggplot(aes(x = time, y = arr_delay)) +
+  geom_point(alpha = 0.2) + geom_smooth()
 
 ```
 
@@ -125,7 +136,7 @@ Plot the average arrival delay by day as a column chart (bar chart).
 
 ```{r}
 flights %>% 
-  mutate(weekday = _______________________________) %>% 
+  mutate(weekday = wday(time_hour = TRUE, abbr = FALSE)) %>% 
   group_by(weekday) %>% 
   filter(!is.na(arr_delay)) %>% 
   summarise(avg_delay = mean(arr_delay)) %>% 
